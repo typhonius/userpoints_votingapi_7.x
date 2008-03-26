@@ -1,0 +1,18 @@
+<?php
+
+
+/**
+* Implementation of hook_install().
+*/
+function userpoints_votingapi_install() {
+  drupal_set_message(t('User Points Voting API has been successfully installed.'));
+  drupal_set_message(t('You can edit the User Points Voting API settings at ') . l('admin/settings/userpoints','admin/settings/userpoints'));
+}
+
+
+/**
+* Implementation of hook_uninstall().
+*/
+function userpoints_votingapi_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name like '%userpoints_votingapi%'");
+}
