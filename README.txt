@@ -10,7 +10,7 @@ The module does the following:
    period via voting.
 
 To install the module:
- - Copy the module to your /sites/modules/custom directory.
+ - Copy the module to your /sites/all/modules/contrib directory.
  - Enable the module at: /admin/build/modules
  - Grant rights to the module at: /admin/user/access
  - Configure the module at: /admin/settings/userpoints
