@@ -6,7 +6,7 @@
  *
  * Extends User Points module with Voting API settings.
  */
-function userpoints_votingapi_form_alter($form_id, &$form) {
+function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'userpoints_admin_settings') {
     // Shift system_settings_form buttons.
     $weight = $form['buttons']['#weight'];
@@ -60,7 +60,7 @@ function userpoints_votingapi_votingapi_insert($vote) {
     'event'     => $vote->tag,
     'entity_id' => $vote->content_id,
     'entity_type' => $vote->content_type,
-    'operation'     => t('insert'),
+    'operation'     => 'vote',
     'description' => 'Vote cast: '. $vote->content_type .' '. $vote->content_id .'.',
     )
   );
@@ -81,7 +81,7 @@ function userpoints_votingapi_votingapi_delete($vote) {
     'event'     => $vote->tag,
     'entity_id' => $vote->content_id,
     'entity_type' => $vote->content_type,
-    'operation'     => t('insert'),
+    'operation'     => 'vote',
     'description' => 'Vote cancelled: '. $vote->content_type .' '. $vote->content_id .'.',
     )
   );
@@ -89,6 +89,6 @@ function userpoints_votingapi_votingapi_delete($vote) {
 }
 
 function userpoints_votingapi_within_threshold($uid, $threshold) {
-  $number = db_num_rows(db_query("SELECT uid FROM {votingapi_vote} WHERE uid = %d AND timestamp > %d", $uid, time() - 86400));
+  $number = db_num_rows(db_query("SELECT uid FROM {userpoints_txn} WHERE uid = %d AND operation = '%s' AND time_stamp > %d", $uid, 'vote', time() - 86400));
   return ($number <= $threshold ? TRUE : FALSE);
 }
