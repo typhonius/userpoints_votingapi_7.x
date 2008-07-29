@@ -89,6 +89,6 @@ function userpoints_votingapi_votingapi_delete($vote) {
 }
 
 function userpoints_votingapi_within_threshold($uid, $threshold) {
-  $number = db_num_rows(db_query("SELECT uid FROM {userpoints_txn} WHERE uid = %d AND operation = '%s' AND time_stamp > %d", $uid, 'vote', time() - 86400));
+  $number = db_result(db_query("SELECT COUNT(*) FROM {votingapi_vote} WHERE uid = %d AND timestamp > %d", $uid, time() - 86400));
   return ($number <= $threshold ? TRUE : FALSE);
 }
