@@ -1,6 +1,6 @@
 <?php
 // $Id$
-
+    
 /**
  * Implementation of hook_form_alter().
  *
@@ -11,7 +11,7 @@ function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
     // Shift system_settings_form buttons.
     $weight = $form['buttons']['#weight'];
     $form['buttons']['#weight'] = $weight + 1;
-    
+
     $group = "votingapi";
     $form[$group] = array(
       '#type' => 'fieldset',
@@ -20,28 +20,37 @@ function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
       '#collapsed' => TRUE,
       '#description' => t(''),
     );
-    
+
     $form[$group][userpoints_votingapi_moderation] = array(
       '#type' => 'checkbox',
       '#title' => t('Moderate votes'),
       '#default_value' => variable_get(userpoints_votingapi_moderation, 0),
       '#description' => t('Moderate User Points earned from votes.'),
     );
-    
+
     $form[$group][userpoints_votingapi_vote] = array(
-        '#type'          => 'textfield',
+      '#type' => 'textfield',
       '#title' => t('!Points for voting', userpoints_translation()),
-        '#default_value' => variable_get(userpoints_votingapi_vote, 1),
-        '#size'          => 5,
-        '#maxlength'     => 5,
+      '#default_value' => variable_get(userpoints_votingapi_vote, 1),
+      '#size' => 5,
+      '#maxlength' => 5,
     );
-    
+
     $form[$group][userpoints_votingapi_daily_threshold] = array(
       '#type' => 'select',
       '#title' => t('Daily threshold'),
       '#options' => drupal_map_assoc(array(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50)),
       '#default_value' => variable_get(userpoints_votingapi_daily_threshold, 0),
       '#description' => t('The maximum number of votes -- that will earn User Points -- in a 24-hour period.<br />Select 0 to ignore.'),
+    );
+
+    $form[$group]['userpoints_votingapi_tid'] = array(
+      '#type' => 'select',
+      '#title' => t('Category'),
+      '#default_value' => variable_get(userpoints_votingapi_tid, 0),
+      '#options' => userpoints_get_categories(),
+      '#description' => t('Votes will be assigned to this category. You can modify what categories are available by modifying the <a href="!url">Userpoints taxonomy</a>.', 
+        array('!url' => url('admin/content/taxonomy/'. variable_get(USERPOINTS_CATEGORY_DEFAULT_VID, '')))),
     );
   }
 }
@@ -55,13 +64,14 @@ function userpoints_votingapi_votingapi_insert($vote) {
   $threshold = variable_get(userpoints_votingapi_daily_threshold, 0);
   if (($threshold == '0') OR (userpoints_votingapi_within_threshold($vote['uid'], $threshold))) {
   userpoints_userpointsapi(array(
-    'uid'       => $vote['uid'],
-    'points'    => variable_get(userpoints_votingapi_vote, 1),
+    'uid' => $vote['uid'],
+    'points' => variable_get(userpoints_votingapi_vote, 1),
     'moderate' => variable_get(userpoints_votingapi_moderation, 0),
-    'event'     => $vote['tag'],
+    'event' => $vote['tag'],
     'entity_id' => $vote['content_id'],
     'entity_type' => $vote['content_type'],
-    'operation'     => t('vote'),
+    'operation' => t('vote'),
+    'tid' => variable_get('userpoints_votingapi_tid', 0),
     'description' => t('Vote cast: !content_type !content_id.',array('!content_type'=> $vote['content_type'], '!content_id'=> $vote['content_id'])),
     )
   );
@@ -77,13 +87,14 @@ function userpoints_votingapi_votingapi_delete($vote) {
   $threshold = variable_get(userpoints_votingapi_daily_threshold, 0);
   if (($threshold == '0') OR (userpoints_votingapi_within_threshold($vote['uid'], $threshold))) {
   userpoints_userpointsapi(array(
-    'uid'       => $vote['uid'],
-    'points'    => -1 * variable_get(userpoints_votingapi_vote, 1),
+    'uid' => $vote['uid'],
+    'points' => -1 * variable_get(userpoints_votingapi_vote, 1),
     'moderate' => variable_get(userpoints_votingapi_moderation, 0),
-    'event'     => $vote['tag'],
+    'event' => $vote['tag'],
     'entity_id' => $vote['content_id'],
     'entity_type' => $vote['content_type'],
-    'operation'     => t('vote'),
+    'operation' => t('vote'),
+    'tid' => variable_get('userpoints_votingapi_tid', 0),
     'description' => t('Vote cancelled: !content_type !content_id.',array('!content_type'=> $vote['content_type'], '!content_id'=> $vote['content_id'])),
     )
   );
