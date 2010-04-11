@@ -12,8 +12,7 @@ function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
     $weight = $form['buttons']['#weight'];
     $form['buttons']['#weight'] = $weight + 1;
 
-    $group = "votingapi";
-    $form[$group] = array(
+    $form['votingapi'] = array(
       '#type' => 'fieldset',
       '#title' => t('Voting API settings'),
       '#collapsible' => TRUE,
@@ -21,14 +20,14 @@ function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
       '#description' => t(''),
     );
 
-    $form[$group][userpoints_votingapi_moderation] = array(
+    $form['votingapi']['userpoints_votingapi_moderation'] = array(
       '#type' => 'checkbox',
       '#title' => t('Moderate votes'),
       '#default_value' => variable_get(userpoints_votingapi_moderation, 0),
       '#description' => t('Moderate User Points earned from votes.'),
     );
 
-    $form[$group][userpoints_votingapi_vote] = array(
+    $form['votingapi']['userpoints_votingapi_vote'] = array(
       '#type' => 'textfield',
       '#title' => t('!Points for voting', userpoints_translation()),
       '#default_value' => variable_get(userpoints_votingapi_vote, 1),
@@ -36,7 +35,7 @@ function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
       '#maxlength' => 5,
     );
 
-    $form[$group][userpoints_votingapi_daily_threshold] = array(
+    $form['votingapi']['userpoints_votingapi_daily_threshold'] = array(
       '#type' => 'select',
       '#title' => t('Daily threshold'),
       '#options' => drupal_map_assoc(array(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50)),
@@ -44,7 +43,7 @@ function userpoints_votingapi_form_alter(&$form, $form_state, $form_id) {
       '#description' => t('The maximum number of votes -- that will earn User Points -- in a 24-hour period.<br />Select 0 to ignore.'),
     );
 
-    $form[$group]['userpoints_votingapi_tid'] = array(
+    $form['votingapi']['userpoints_votingapi_tid'] = array(
       '#type' => 'select',
       '#title' => t('Category'),
       '#default_value' => variable_get(userpoints_votingapi_tid, 0),
@@ -72,10 +71,10 @@ function userpoints_votingapi_votingapi_insert($vote) {
     'entity_type' => $vote['content_type'],
     'operation' => t('vote'),
     'tid' => variable_get('userpoints_votingapi_tid', 0),
-    'description' => t('Vote cast: !content_type !content_id.',array('!content_type'=> $vote['content_type'], '!content_id'=> $vote['content_id'])),
+    'description' => t('Vote cast: !content_type !content_id.',  array('!content_type' => $vote['content_type'], '!content_id' => $vote['content_id'])),
     )
   );
- }
+  }
 }
 
 /**
@@ -95,10 +94,10 @@ function userpoints_votingapi_votingapi_delete($vote) {
     'entity_type' => $vote['content_type'],
     'operation' => t('vote'),
     'tid' => variable_get('userpoints_votingapi_tid', 0),
-    'description' => t('Vote cancelled: !content_type !content_id.',array('!content_type'=> $vote['content_type'], '!content_id'=> $vote['content_id'])),
+    'description' => t('Vote cancelled: !content_type !content_id.', array('!content_type' => $vote['content_type'], '!content_id' => $vote['content_id'])),
     )
   );
- }
+  }
 }
 
 function userpoints_votingapi_within_threshold($uid, $threshold) {
