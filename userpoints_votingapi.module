@@ -34,13 +34,27 @@ function userpoints_votingapi_form_userpoints_admin_settings_alter(&$form, $form
     '#maxlength' => 5,
   );
 
-  $form['votingapi']['userpoints_votingapi_daily_threshold'] = array(
+  $form['votingapi']['userpoints_votingapi_threshold'] = array(
     '#type' => 'select',
-    '#title' => t('Daily threshold'),
+    '#title' => t('Threshold'),
     '#options' => drupal_map_assoc(array(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50)),
-    '#default_value' => variable_get(userpoints_votingapi_daily_threshold, 0),
-    '#description' => t('The maximum number of votes -- that will earn User Points -- in a 24-hour period.<br />Select 0 to ignore.'),
+    '#default_value' => variable_get(userpoints_votingapi_threshold, 0),
+    '#description' => t('The maximum number of votes -- that will earn User Points -- in the selected period.<br />Select 0 to ignore.'),
   );
+  
+  $form['votingapi']['userpoints_votingapi_period'] = array(
+    '#type' => 'select',
+    '#title' => t('Period'),
+    '#options' => array(
+      '3600' => t('Hourly'),
+      '86400' => t('Daily'),
+      '604800' => t('Weekly'),
+      '2592000' => t('Monthly (30 days)'),
+      '31536000' => t('Annually'),
+      ),
+    '#default_value' => variable_get('userpoints_votingapi_period', 86400),
+    '#description' => t('The time period during which the threshold applies.'),
+);
   
   $form['votingapi']['userpoints_votingapi_vote_karma_positive'] = array(
     '#type' => 'textfield',
@@ -76,7 +90,7 @@ function userpoints_votingapi_votingapi_insert($vote) {
   global $user;
   
   $vote = $vote[0];
-  $threshold = variable_get('userpoints_votingapi_daily_threshold', 0);
+  $threshold = variable_get('userpoints_votingapi_threshold', 0);
   
   if (($threshold == '0') || (userpoints_votingapi_within_threshold($vote['uid'], $threshold))) {
     userpoints_userpointsapi(array(
@@ -135,7 +149,7 @@ function userpoints_votingapi_votingapi_insert($vote) {
  */
 function userpoints_votingapi_votingapi_delete($vote) {
   $vote = $vote[0];
-  $threshold = variable_get('userpoints_votingapi_daily_threshold', 0);
+  $threshold = variable_get('userpoints_votingapi_threshold', 0);
   
   if (($threshold == '0') || (userpoints_votingapi_within_threshold($vote['uid'], $threshold))) {
     userpoints_userpointsapi(array(
@@ -189,6 +203,6 @@ function userpoints_votingapi_votingapi_delete($vote) {
 }
 
 function userpoints_votingapi_within_threshold($uid, $threshold) {
-  $number = db_result(db_query("SELECT COUNT(*) FROM {votingapi_vote} WHERE uid = %d AND timestamp > %d", $uid, time() - 86400));
-  return ($number <= $threshold ? TRUE : FALSE);
+  $number = db_result(db_query("SELECT COUNT(*) FROM {userpoints_txn} WHERE operation = 'vote' AND uid = %d AND time_stamp > %d", $uid, time() - variable_get(userpoints_votingapi_period, 86400)));
+  return ($number < $threshold ? TRUE : FALSE);
 }

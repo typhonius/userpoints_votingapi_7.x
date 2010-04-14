@@ -21,3 +21,13 @@ function userpoints_votingapi_install() {
 function userpoints_votingapi_uninstall() {
   db_query("DELETE FROM {variable} WHERE name like '%userpoints_votingapi%'");
 }
+
+/**
+ * Change variable name and set default value
+ */
+function userpoints_votingapi_update_6001() {
+  $ret = array();
+  variable_set('userpoints_votingapi_threshold', variable_get('userpoints_votingapi_daily_threshold', 86400));
+  variable_del('userpoints_votingapi_daily_threshold');
+  return $ret;
+}
