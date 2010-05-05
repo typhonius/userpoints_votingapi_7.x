@@ -148,6 +148,8 @@ function userpoints_votingapi_votingapi_insert($vote) {
  *
  */
 function userpoints_votingapi_votingapi_delete($vote) {
+  global $user;
+  
   $vote = $vote[0];
   $threshold = variable_get('userpoints_votingapi_threshold', 0);
   
