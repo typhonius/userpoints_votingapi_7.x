@@ -1,5 +1,5 @@
 The User Points Voting API module extends the power to award points to voting
-modules that depend on Voting API (Voting, Fivestar, Latest and Greatest).
+modules that depend on Voting API (Voting, Fivestar, Latest and Greatest for example).
 
 The module does the following:
  - Adds points to a user's account when they cast a vote using a Voting API-
