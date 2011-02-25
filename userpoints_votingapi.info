@@ -1,4 +1,3 @@
-; $Id$
 name = User Points Voting API
 description = Integrates User Points with Voting API-based modules like Fivestar.
 package = Userpoints
