@@ -5,10 +5,10 @@
  *
  * Extends User Points module with Voting API settings.
  */ 
-function userpoints_votingapi_form_userpoints_admin_settings_alter(&$form, $form_state) {
+function userpoints_votingapi_form_userpoints_admin_settings_alter(&$form, &$form_state, $form_id) {
   // Shift system_settings_form buttons.
-  $weight = $form['buttons']['#weight'];
-  $form['buttons']['#weight'] = $weight + 1;
+  //$weight = $form['buttons']['#weight'];
+  //$form['buttons']['#weight'] = $weight + 1;
 
   $form['votingapi'] = array(
     '#type' => 'fieldset',
@@ -21,14 +21,14 @@ function userpoints_votingapi_form_userpoints_admin_settings_alter(&$form, $form
   $form['votingapi']['userpoints_votingapi_moderation'] = array(
     '#type' => 'checkbox',
     '#title' => t('Moderate votes'),
-    '#default_value' => variable_get(userpoints_votingapi_moderation, 0),
+    '#default_value' => variable_get('userpoints_votingapi_moderation', 0),
     '#description' => t('Moderate User Points earned from votes.'),
   );
 
   $form['votingapi']['userpoints_votingapi_vote'] = array(
     '#type' => 'textfield',
     '#title' => t('!Points for voting', userpoints_translation()),
-    '#default_value' => variable_get(userpoints_votingapi_vote, 1),
+    '#default_value' => variable_get('userpoints_votingapi_vote', 1),
     '#size' => 5,
     '#maxlength' => 5,
   );
@@ -37,7 +37,7 @@ function userpoints_votingapi_form_userpoints_admin_settings_alter(&$form, $form
     '#type' => 'select',
     '#title' => t('Threshold'),
     '#options' => drupal_map_assoc(array(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50)),
-    '#default_value' => variable_get(userpoints_votingapi_threshold, 0),
+    '#default_value' => variable_get('userpoints_votingapi_threshold', 0),
     '#description' => t('The maximum number of votes -- that will earn User Points -- in the selected period.<br />Select 0 to ignore.'),
   );
   
@@ -74,7 +74,7 @@ function userpoints_votingapi_form_userpoints_admin_settings_alter(&$form, $form
   $form['votingapi']['userpoints_votingapi_tid'] = array(
     '#type' => 'select',
     '#title' => t('Category'),
-    '#default_value' => variable_get(userpoints_votingapi_tid, 0),
+    '#default_value' => variable_get('userpoints_votingapi_tid', 0),
     '#options' => userpoints_get_categories(),
     '#description' => t('Votes will be assigned to this category. You can modify what categories are available by modifying the <a href="!url">Userpoints taxonomy</a>.', 
       array('!url' => url('admin/content/taxonomy/'. variable_get(USERPOINTS_CATEGORY_DEFAULT_VID, '')))),
@@ -204,6 +204,6 @@ function userpoints_votingapi_votingapi_delete($vote) {
 }
 
 function userpoints_votingapi_within_threshold($uid, $threshold) {
-  $number = db_result(db_query("SELECT COUNT(*) FROM {userpoints_txn} WHERE operation = 'vote' AND uid = %d AND time_stamp > %d", $uid, time() - variable_get(userpoints_votingapi_period, 86400)));
+  $number = db_result(db_query("SELECT COUNT(*) FROM {userpoints_txn} WHERE operation = 'vote' AND uid = %d AND time_stamp > %d", $uid, time() - variable_get('userpoints_votingapi_period', 86400)));
   return ($number < $threshold ? TRUE : FALSE);
 }

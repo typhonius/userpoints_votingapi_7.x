@@ -1,6 +1,6 @@
 name = User Points Voting API
 description = Integrates User Points with Voting API-based modules like Fivestar.
 package = Userpoints
-core = 6.x
+core = 7.x
 dependencies[] = userpoints
 dependencies[] = votingapi
